@@ -21,6 +21,7 @@ namespace RiskText
         //public static string userID = "ji8227"; //burde nok have noget mere dynamisk
         public static string userID = "glen"; //burde nok have noget mere dynamisk
 
+        public bool readOnly =false; 
 
         public RiskTextForm()
         {
@@ -50,6 +51,7 @@ namespace RiskText
             dgvRisks.CurrentCell = null;
             if (Environment.UserName.ToLower() != userID)
             {
+                readOnly = true;
                 deleteToolStripMenuItem.Enabled = false;
                 saveToolStripMenuItem.Enabled = false;
                 addToolStripMenuItem.Enabled = false;
@@ -209,7 +211,7 @@ namespace RiskText
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MainRiskForm mainRisk = new MainRiskForm(dgvRisks.CurrentCell, connectionString, dtp.Value.Date);
+            MainRiskForm mainRisk = new MainRiskForm(dgvRisks.CurrentCell, connectionString, dtp.Value.Date, readOnly);
             mainRisk.Show();  
         }
 
@@ -256,6 +258,7 @@ namespace RiskText
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (readOnly) return;
             AddingForm adding = new AddingForm("MainRisk", connectionString);
             adding.Show();
         }
@@ -267,6 +270,7 @@ namespace RiskText
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) //Ej Klar!!!
         {
+            if (readOnly) return;
             string MainRiskID = dgvRisks.CurrentCell.OwningColumn.HeaderText;
             int MainRiskIK;
             var result = MessageBox.Show($"Do you wish to Delete '{MainRiskID}'", $"Delete {MainRiskID}", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -300,8 +304,9 @@ namespace RiskText
 
         private void saveToolStripMenuItem1_Click(object sender, EventArgs e)  //Done
         {
-
-            string SQL = ""; ;
+            if (readOnly) return;
+            
+            string SQL = "";
             var dates = new Dates(this);
 
             dgvRisks.CurrentCell = null;
@@ -378,7 +383,7 @@ namespace RiskText
 
         private void dgvRisks_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            MainRiskForm mainRisk = new MainRiskForm(dgvRisks.CurrentCell, connectionString, dtp.Value.Date);
+            MainRiskForm mainRisk = new MainRiskForm(dgvRisks.CurrentCell, connectionString, dtp.Value.Date, readOnly);
             try
             {
                 mainRisk.Show();
@@ -437,6 +442,7 @@ namespace RiskText
 
         private void deleteAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (readOnly) return;
             if(MessageBox.Show("Are you sure?", "DELETE ALL - Watch out!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop) == DialogResult.OK)
             {
                 if(MessageBox.Show("Are you still sure?", "DELETE ALL - Watch out!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop) == DialogResult.OK)
@@ -453,6 +459,7 @@ namespace RiskText
 
         private void deleteAboveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (readOnly) return;
             if (MessageBox.Show("Are you sure?", $"DELETE [{toolStripComboBoxDelete.Text}] Watch out!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop) == DialogResult.OK)
             {
                 if (MessageBox.Show("Are you still sure?", "Watch out!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop) == DialogResult.OK)
@@ -467,6 +474,7 @@ namespace RiskText
 
         private void rebuildAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (readOnly) return;
             if (MessageBox.Show("Are you sure?", "rebuild ALL - Watch out!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop) == DialogResult.OK)
             {
                 if (MessageBox.Show("Are you still sure?", "Create ALL - Watch out!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop) == DialogResult.OK)
@@ -528,6 +536,7 @@ namespace RiskText
 
         private void rebuildAboveToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            if (readOnly) return;
             if (MessageBox.Show("Are you sure?", $"Rebuild [{toolStripComboBoxRebuild.Text}] - Watch out!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop) == DialogResult.OK)
             {
                 if (MessageBox.Show("Are you still sure?", "Create ALL - Watch out!!", MessageBoxButtons.OKCancel, MessageBoxIcon.Stop) == DialogResult.OK)

@@ -24,21 +24,24 @@ namespace RiskText
         public DateTime subRiskTo;
         public DateTime subRiskFrom;
         public DateTime EvalDate;
+        public bool readOnly = false;
 
-        public SubRiskForm()
+        public SubRiskForm(bool readOnly)
         {
-
+            this.readOnly = readOnly;
             InitializeComponent();
             txtSubRisk.DeselectAll();
-            if (Environment.UserName.ToLower() != RiskTextForm.userID)
+            if (readOnly)
             {
                 saveToolStripMenuItem.Enabled = false;
             }
 
         }
 
-        public SubRiskForm(DataGridViewCell _dgvCell, string _connectionString, MainRiskForm _form)
+        public SubRiskForm(DataGridViewCell _dgvCell, string _connectionString, MainRiskForm _form, bool readOnly)
         {
+            this.readOnly = readOnly;
+
             try
             {
                 dgvCell = _dgvCell;
@@ -46,7 +49,7 @@ namespace RiskText
                 connectionString = _connectionString;
                 InitializeComponent();
 
-                if (Environment.UserName.ToLower() != RiskTextForm.userID)
+                if (readOnly)
                 {
                     saveToolStripMenuItem.Enabled = false;
                 }
@@ -122,6 +125,8 @@ namespace RiskText
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e) //Ej klar
         {
+            if (readOnly) return;
+
             if (!SaveCheck())
             {
                 string SQL =

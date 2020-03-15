@@ -25,19 +25,22 @@ namespace RiskText
         public DateTime EvalDate;
         DataGridViewCell dgvCell;
 
+        bool readOnly = false;
+
         public MainRiskForm()
         {
             InitializeComponent();
         }
-        public MainRiskForm(DataGridViewCell _dgvCell, string _connectionString, DateTime EvalDate)
+        public MainRiskForm(DataGridViewCell _dgvCell, string _connectionString, DateTime EvalDate, bool readOnly)
         {
+            this.readOnly = readOnly;
+
             dgvCell = _dgvCell;
-            
             connectionString = _connectionString;
             InitializeComponent();
             dtp.Value = EvalDate;
             init();
-            if(Environment.UserName.ToLower() != RiskTextForm.userID)
+            if(readOnly)
             {
                 saveToolStripMenuItem.Enabled = false;
                 addToolStripMenuItem.Enabled = false;
@@ -142,20 +145,14 @@ namespace RiskText
                 dgvSubRisks.Rows[0].Cells[j].Value = true;
             }
 
-            int i = 0;
             dgvSubRisks.CurrentCell = null;
-            if(dtp.Value.Date != DateTime.Today)
-            {
-                lblOld.Visible = true;  
-            }
-            else
-            {
-                lblOld.Visible = false;
-            }
+            lblOld.Visible = false;
+            if (dtp.Value.Date != DateTime.Today) lblOld.Visible = true;
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (readOnly) return;
             string SQL = "";
             if (!SaveCheck())
             {
@@ -387,7 +384,7 @@ namespace RiskText
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SubRiskForm subRisk = new SubRiskForm(dgvSubRisks.CurrentCell, connectionString, this);
+            SubRiskForm subRisk = new SubRiskForm(dgvSubRisks.CurrentCell, connectionString, this, readOnly);
             try
             {
                 subRisk.Show();
@@ -400,6 +397,7 @@ namespace RiskText
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (readOnly) return;
             AddingForm adding = new AddingForm(txtMainRiskID.Text, connectionString);
             adding.Show();
         }
@@ -411,6 +409,7 @@ namespace RiskText
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (readOnly) return;
             try
             {
                 string SubRiskID = dgvSubRisks.CurrentCell.OwningColumn.HeaderText;
@@ -448,6 +447,7 @@ namespace RiskText
 
         private void addExistingToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (readOnly) return;
             ChooseSubRisk subRisk = new ChooseSubRisk(connectionString, this);
             try
             {
@@ -462,7 +462,8 @@ namespace RiskText
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(dtp.Value.Date == DateTime.Today)
+            if (readOnly) return;
+            if (dtp.Value.Date == DateTime.Today)
             {
                 int subRiskIK = 0;
 
@@ -492,7 +493,7 @@ namespace RiskText
 
         private void dgvSubRisks_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            SubRiskForm subRisk = new SubRiskForm(dgvSubRisks.CurrentCell, connectionString, this);
+            SubRiskForm subRisk = new SubRiskForm(dgvSubRisks.CurrentCell, connectionString, this, readOnly);
             try
             {
                 subRisk.Show();
